@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherCanvas - AI Weather Visualization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WeatherCanvas</h1>
+            <p>AI-powered weather visualization for any day, any place</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="location">Location</label>
+                <div class="location-input">
+                    <input type="text" id="location" placeholder="Enter ZIP code" maxlength="5" pattern="[0-9]{5}">
+                    <button id="detect-location" class="btn-secondary" title="Use my location">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <line x1="12" y1="2" x2="12" y2="6"></line>
+                            <line x1="12" y1="18" x2="12" y2="22"></line>
+                            <line x1="2" y1="12" x2="6" y2="12"></line>
+                            <line x1="18" y1="12" x2="22" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div id="location-name" class="location-name"></div>
+            </div>
+
+            <div class="control-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" value="">
+            </div>
+
+            <div class="control-group">
+                <button id="generate" class="btn-primary">Generate Image</button>
+                <button id="regenerate" class="btn-secondary" style="display: none;">Regenerate</button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Creating your weather visualization...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="result" class="result" style="display: none;">
+            <img id="weather-image" src="" alt="Weather visualization">
+            <div class="image-info">
+                <p id="image-description"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

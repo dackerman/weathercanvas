@@ -13,6 +13,9 @@ const ImageCache = require('./imageCache');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Serve static files from public directory
+app.use(express.static('public'));
+
 const weatherService = new WeatherService();
 const promptGenerator = new PromptGenerator();
 const imageGenerator = new ImageGenerator(process.env.OPENAI_API_KEY);
@@ -48,6 +51,8 @@ app.get('/generate', async (req, res) => {
       const cachedImage = await imageCache.get(zip, targetDate);
       if (cachedImage) {
         console.log('Serving cached image');
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'public, max-age=3600');
         return res.sendFile(cachedImage.filepath);
       }
     } else {
@@ -90,7 +95,9 @@ app.get('/generate', async (req, res) => {
     
     const cachedPath = await imageCache.set(zip, targetDate, imageBuffer, location);
     
-    // Send the image
+    // Send the image with proper headers
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.sendFile(cachedPath);
 
   } catch (error) {

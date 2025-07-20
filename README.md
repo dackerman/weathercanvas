@@ -27,7 +27,12 @@ Start the server:
 npm start
 ```
 
-Access the image generation endpoint:
+Open the web interface:
+```
+http://localhost:3000
+```
+
+Or use the API directly:
 ```
 http://localhost:3000/generate?zip=07901&date=2025-07-24
 ```
@@ -46,6 +51,8 @@ npm run generate
 
 ## Features
 
+- Beautiful web interface with modern design
+- Automatic location detection using browser geolocation
 - Web API for on-demand image generation
 - Zip code to location lookup
 - Historical and future weather data support
