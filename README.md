@@ -35,6 +35,7 @@ http://localhost:3000/generate?zip=07901&date=2025-07-24
 Parameters:
 - `zip`: US zip code (required)
 - `date`: Date in YYYY-MM-DD format (optional, defaults to today)
+- `cached`: Set to `false` to force regeneration (optional, defaults to true)
 
 ### Command Line
 

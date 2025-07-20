@@ -21,7 +21,7 @@ const imageCache = new ImageCache();
 
 app.get('/generate', async (req, res) => {
   try {
-    const { zip, date } = req.query;
+    const { zip, date, cached } = req.query;
     
     if (!zip) {
       return res.status(400).json({ error: 'zip parameter is required' });
@@ -38,13 +38,20 @@ app.get('/generate', async (req, res) => {
       return res.status(400).json({ error: 'Invalid date format' });
     }
 
-    console.log(`Generating image for zip: ${zip}, date: ${targetDate.toISOString()}`);
+    // Check if we should bypass cache
+    const useCache = cached !== 'false';
 
-    // Check cache first
-    const cached = await imageCache.get(zip, targetDate);
-    if (cached) {
-      console.log('Serving cached image');
-      return res.sendFile(cached.filepath);
+    console.log(`Generating image for zip: ${zip}, date: ${targetDate.toISOString()}, useCache: ${useCache}`);
+
+    // Check cache first (unless cached=false)
+    if (useCache) {
+      const cachedImage = await imageCache.get(zip, targetDate);
+      if (cachedImage) {
+        console.log('Serving cached image');
+        return res.sendFile(cachedImage.filepath);
+      }
+    } else {
+      console.log('Cache bypassed by user request');
     }
 
     // Get location from zip code
