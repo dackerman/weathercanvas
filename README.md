@@ -73,3 +73,49 @@ curl http://localhost:3000/generate?zip=10001&date=2025-07-20
 ```
 
 This generates an image representing the weather in New York City (10001) on July 20, 2025.
+
+## Docker Deployment
+
+### Using Docker Compose (Recommended)
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/dackerman/weathercanvas.git
+   cd weathercanvas
+   ```
+
+2. Create a `.env` file with your OpenAI API key:
+   ```bash
+   echo "OPENAI_API_KEY=your_api_key_here" > .env
+   ```
+
+3. Build and run with Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. Access the application at http://localhost:8080
+
+### Using Docker directly
+
+```bash
+# Build the image
+docker build -t weathercanvas .
+
+# Run the container
+docker run -d \
+  -p 8080:3000 \
+  -e OPENAI_API_KEY=your_api_key_here \
+  -v $(pwd)/cache:/app/cache \
+  -v $(pwd)/images:/app/images \
+  --name weathercanvas \
+  weathercanvas
+```
+
+### Docker Features
+
+- Runs as non-root user for security
+- Health checks for container monitoring
+- Persistent volumes for cache and images
+- Production-optimized Node.js Alpine image
+- Automatic restart on failure

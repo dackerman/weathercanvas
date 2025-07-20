@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  weathercanvas:
+    build: .
+    container_name: weathercanvas
+    ports:
+      - "8080:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # OpenAI API key must be provided via environment or .env file
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      # Persist cache and images across container restarts
+      - ./cache:/app/cache
+      - ./images:/app/images
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
