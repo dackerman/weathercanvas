@@ -14,8 +14,8 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       # Persist cache and images across container restarts
-      - ./cache:/app/cache
-      - ./images:/app/images
+      - ./cache:/app/cache:rw
+      - ./images:/app/images:rw
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
       interval: 30s

@@ -11,15 +11,15 @@ RUN npm ci --only=production
 # Copy application code
 COPY . .
 
-# Create cache and images directories
-RUN mkdir -p cache images
-
-# Create non-root user
+# Create non-root user first
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S weathercanvas -u 1001
 
-# Change ownership to non-root user
-RUN chown -R weathercanvas:nodejs /app
+# Create cache and images directories with proper ownership
+RUN mkdir -p cache images && \
+    chown -R weathercanvas:nodejs /app && \
+    chmod -R 755 /app/cache /app/images
+
 USER weathercanvas
 
 # Expose port

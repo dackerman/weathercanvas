@@ -13,6 +13,9 @@ const ImageCache = require('./imageCache');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy headers (needed for Tailscale HTTPS forwarding)
+app.set('trust proxy', true);
+
 // Serve static files from public directory
 app.use(express.static('public'));
 
