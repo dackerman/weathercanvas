@@ -14,7 +14,7 @@ class ImageGenerator {
       const {
         model = "gpt-image-1",
         size = "1024x1024",
-        quality = "standard",
+        quality = "auto",
         n = 1,
       } = options;
 
@@ -31,7 +31,27 @@ class ImageGenerator {
         n,
       });
 
-      return response.data[0].url;
+      console.log('Image generation response structure:', {
+        created: response.created,
+        background: response.background,
+        hasData: !!response.data,
+        dataLength: response.data?.length
+      });
+      
+      // Check if we have base64 data
+      if (response.data?.[0]?.b64_json) {
+        // Return base64 data with a special prefix to indicate it's not a URL
+        return 'data:image/png;base64,' + response.data[0].b64_json;
+      }
+      
+      // Check for URL in response
+      const imageUrl = response.data?.[0]?.url || response.url;
+      
+      if (!imageUrl) {
+        throw new Error('No image URL or base64 data found in response');
+      }
+      
+      return imageUrl;
     } catch (error) {
       console.error("Error generating image:", error);
       throw error;

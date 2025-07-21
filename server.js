@@ -20,7 +20,7 @@ app.set('trust proxy', true);
 app.use(express.static('public'));
 
 const weatherService = new WeatherService();
-const promptGenerator = new PromptGenerator();
+const promptGenerator = new PromptGenerator(process.env.OPENAI_API_KEY);
 const imageGenerator = new ImageGenerator(process.env.OPENAI_API_KEY);
 const zipCodeService = new ZipCodeService();
 const imageCache = new ImageCache();
@@ -84,8 +84,8 @@ app.get('/generate', async (req, res) => {
 
     console.log(`Weather: ${enhancedWeather.weatherDescription}, ${Math.round(enhancedWeather.temperature)}°F`);
 
-    // Generate prompt
-    const prompt = promptGenerator.generatePrompt(location.locationName, enhancedWeather, targetDate);
+    // Generate prompt using GPT-4
+    const prompt = await promptGenerator.generatePrompt(location.locationName, enhancedWeather, targetDate);
     
     // Log the full prompt
     console.log('Generated prompt:');
@@ -95,14 +95,29 @@ app.get('/generate', async (req, res) => {
     // Generate image
     console.log('Generating new image...');
     const imageUrl = await imageGenerator.generateImage(prompt, {
-      model: 'dall-e-3',
+      model: 'gpt-image-1',
       size: '1024x1024',
-      quality: 'standard' // Use 'standard' for web serving
+      quality: 'auto' // Use 'auto' for best quality
     });
 
-    // Download and cache the image
-    const imageResponse = await fetch(imageUrl);
-    const imageBuffer = await imageResponse.buffer();
+    // Log the image URL for debugging
+    console.log('Image URL/data received:', imageUrl?.substring(0, 100) + '...');
+    
+    let imageBuffer;
+    
+    if (imageUrl.startsWith('data:image/')) {
+      // Handle base64 data URL
+      console.log('Converting base64 image data to buffer');
+      const base64Data = imageUrl.split(',')[1];
+      imageBuffer = Buffer.from(base64Data, 'base64');
+    } else if (imageUrl.startsWith('http')) {
+      // Handle regular URL
+      console.log('Downloading image from URL');
+      const imageResponse = await fetch(imageUrl);
+      imageBuffer = await imageResponse.buffer();
+    } else {
+      throw new Error(`Invalid image format received: ${imageUrl?.substring(0, 100)}`);
+    }
     
     const cachedPath = await imageCache.set(zip, targetDate, imageBuffer, location, prompt);
     
