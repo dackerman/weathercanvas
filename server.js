@@ -56,6 +56,9 @@ app.get('/generate', async (req, res) => {
         console.log('Serving cached image');
         res.setHeader('Content-Type', 'image/png');
         res.setHeader('Cache-Control', 'public, max-age=3600');
+        if (cachedImage.metadata && cachedImage.metadata.prompt) {
+          res.setHeader('X-Image-Prompt', encodeURIComponent(cachedImage.metadata.prompt));
+        }
         return res.sendFile(cachedImage.filepath);
       }
     } else {
@@ -84,6 +87,11 @@ app.get('/generate', async (req, res) => {
     // Generate prompt
     const prompt = promptGenerator.generatePrompt(location.locationName, enhancedWeather, targetDate);
     
+    // Log the full prompt
+    console.log('Generated prompt:');
+    console.log(prompt);
+    console.log('---');
+    
     // Generate image
     console.log('Generating new image...');
     const imageUrl = await imageGenerator.generateImage(prompt, {
@@ -96,11 +104,12 @@ app.get('/generate', async (req, res) => {
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = await imageResponse.buffer();
     
-    const cachedPath = await imageCache.set(zip, targetDate, imageBuffer, location);
+    const cachedPath = await imageCache.set(zip, targetDate, imageBuffer, location, prompt);
     
-    // Send the image with proper headers
+    // Send the image with proper headers and prompt in custom header
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('X-Image-Prompt', encodeURIComponent(prompt));
     res.sendFile(cachedPath);
 
   } catch (error) {

@@ -61,7 +61,7 @@ class ImageCache {
     }
   }
 
-  async set(zipCode, date, imageBuffer, locationInfo) {
+  async set(zipCode, date, imageBuffer, locationInfo, prompt = null) {
     const key = this.generateCacheKey(zipCode, date);
     const filename = `${key}.png`;
     const filepath = path.join(this.cacheDir, filename);
@@ -73,6 +73,7 @@ class ImageCache {
       zipCode,
       date: new Date(date).toISOString(),
       location: locationInfo,
+      prompt: prompt,
       createdAt: new Date().toISOString()
     });
 

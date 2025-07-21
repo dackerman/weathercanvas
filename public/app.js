@@ -146,18 +146,30 @@ async function generateImage(forceRegenerate = false) {
             throw new Error(data.error || 'Failed to generate image');
         }
 
+        // Get the prompt from response headers
+        const encodedPrompt = response.headers.get('X-Image-Prompt');
+        const prompt = encodedPrompt ? decodeURIComponent(encodedPrompt) : null;
+        
         // Get the image blob
         const blob = await response.blob();
         currentImageUrl = URL.createObjectURL(blob);
         
         // Display the image
         weatherImage.src = currentImageUrl;
-        imageDescription.textContent = `Weather visualization for ${locationName.textContent || zipCode} on ${new Date(date).toLocaleDateString('en-US', { 
+        
+        // Create description with prompt
+        let descriptionHTML = `Weather visualization for ${locationName.textContent || zipCode} on ${new Date(date).toLocaleDateString('en-US', { 
             weekday: 'long', 
             year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
         })}`;
+        
+        if (prompt) {
+            descriptionHTML += `<div class="prompt-section"><h3>Image Prompt:</h3><p class="prompt-text">${prompt}</p></div>`;
+        }
+        
+        imageDescription.innerHTML = descriptionHTML;
         
         loading.style.display = 'none';
         result.style.display = 'block';
