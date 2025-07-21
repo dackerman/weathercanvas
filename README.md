@@ -1,6 +1,6 @@
-# Daily Weather Image Generator
+# WeatherCanvas
 
-A web service that generates representative images for any day and location based on weather conditions using OpenAI's DALL-E 3.
+A web service that generates unique, AI-crafted weather visualizations for any day and location. Uses GPT-4.1 to create creative prompts and OpenAI's image generation to produce beautiful weather-based artwork.
 
 ## Setup
 
@@ -51,15 +51,15 @@ npm run generate
 
 ## Features
 
-- Beautiful web interface with modern design
-- Automatic location detection using browser geolocation
-- Web API for on-demand image generation
-- Zip code to location lookup
-- Historical and future weather data support
-- Image caching to reduce API calls
-- Real-time weather data from Open-Meteo API
-- Season and time-aware prompt generation
-- High-quality image generation with DALL-E 3
+- **AI-Powered Prompt Generation**: Uses GPT-4.1-2025-04-14 to create unique, creative prompts for each image
+- **Beautiful Web Interface**: Modern, responsive design with glassmorphism effects
+- **Automatic Location Detection**: Uses browser geolocation to find your zip code
+- **Prompt Display**: Shows the full AI-generated prompt below each image
+- **Smart Caching**: Reduces API calls while allowing forced regeneration with `cached=false`
+- **Real-time Weather Data**: Fetches current and historical weather from Open-Meteo API
+- **Season-Aware Generation**: Considers seasonal elements and local weather conditions
+- **High-Quality Images**: Generated using OpenAI's image generation models
+- **Docker Ready**: Complete containerization with health checks and security features
 
 ## API Endpoints
 
@@ -73,6 +73,19 @@ curl http://localhost:3000/generate?zip=10001&date=2025-07-20
 ```
 
 This generates an image representing the weather in New York City (10001) on July 20, 2025.
+
+## How It Works
+
+1. **Weather Data**: Fetches real-time weather conditions from Open-Meteo API
+2. **AI Prompt Generation**: GPT-4.1 creates a unique, detailed prompt based on:
+   - Location and local landmarks
+   - Current weather conditions (temperature, wind, clouds)
+   - Seasonal characteristics
+   - Atmospheric lighting (without time-of-day references)
+3. **Image Generation**: OpenAI's image model creates the visualization
+4. **Display**: Shows both the generated image and the AI prompt used to create it
+
+Each image is completely unique, as GPT-4.1 generates creative prompts that capture the specific weather conditions and local character of any location.
 
 ## Docker Deployment
 
@@ -91,7 +104,7 @@ This generates an image representing the weather in New York City (10001) on Jul
 
 3. Build and run with Docker Compose:
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 4. Access the application at http://localhost:8080
